@@ -1,5 +1,14 @@
 import numpy as np
 
+'''(X, D, C)
+x: variables, self.row_solution + self.col_solution
+d: Domain, {0, 1}, {True, False}
+c: constrain, x之间的关系
+            1. constraint[i,j] = row_solution[i,j] + row_solution[i+1,j] + col_solution[i,j] + col_solution[i,j+1]
+                                        数                   上                      下                  左                  右
+            2. 闭环
+'''
+
 class slitherlink:
     def __init__(self, nrow, ncol, constraint):
         """
@@ -10,8 +19,10 @@ class slitherlink:
         self.ncol = ncol
         self.constraint = constraint  # initialize with the value of -1
         # row_solution[i,j] = 1 if the solution includes a valid side
-        self.row_solution = np.zeros(shape=(self.nrow+1, self.ncol))
-        self.col_solution = np.zeros(shape=(self.nrow, self.ncol+1))
+        self.row_solution = np.zeros(shape=(self.nrow+1, self.ncol))  # (r+1) * c, self.row_solution[0,1]
+        self.col_solution = np.zeros(shape=(self.nrow, self.ncol+1))  # r * (c+1), self.col_solution[2,3]
+        # self.row_solution[i,j] (i = nrow) : constraint[i,j]（i!=nrow） 上面的一条边    constraint[nrow-1, ncol-1]
+        # self.col_solution[i,j] : constraint[i,j] 左边一条边
 
     def print_problem(self):
         """
