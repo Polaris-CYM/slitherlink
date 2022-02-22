@@ -13,13 +13,6 @@ class MoveError(Exception):
 
 
 def cellfunc_fill_in_xes(puzzle, row, col):
-    '''
-    This helper function fills in 'x' values around cells that are currently
-    surrounded by the number of links specified by the cell's number.  For
-    example, if a cell has the number '1' in it, and currently has one link
-    on it, the remaining slots are set to 'x'.
-    '''
-
     cellval = puzzle.get_board(row, col)
     if cellval != ' ':
         links_required = int(cellval)
@@ -36,20 +29,6 @@ def cellfunc_fill_in_xes(puzzle, row, col):
 
 
 def dotfunc_fill_in_xes_links(puzzle, row, col):
-    '''
-    This helper function enforces the rule that each dot must have either
-    zero or two links coming to it.  If the dot has 2 links then the other
-    slots are set to 'x'.  If the dot has at least 1 link and 2 'x' values
-    then the remaining slot is set to a link.  If the dot has 3 'x' values
-    then the remaining slot is set to an 'x' value.
-    '''
-
-    # If the dot has 2 links surrounding it, the other two slots should
-    # be set to 'x'.
-
-    # If the dot has 3 x-es surrounding it, the final slot should be
-    # set to 'x' too.
-
     num_links = puzzle.count_adjacent_links(row, col)
     num_xes = puzzle.count_adjacent_xes(row, col)
 
@@ -76,12 +55,6 @@ def dotfunc_fill_in_xes_links(puzzle, row, col):
 
 
 def cellfunc_fill_in_links(puzzle, row, col):
-    '''
-    This helper function handles the case where a cell has a number in it,
-    call it cellnum, and the cell is surrounded by 4 - cellnum 'x' values.
-    In this case, the remaining slots must be links.
-    '''
-
     cellval = puzzle.get_board(row, col)
     if cellval != ' ':
         links_required = int(cellval)
@@ -98,13 +71,6 @@ def cellfunc_fill_in_links(puzzle, row, col):
 
 
 def cellfunc_handle_adjacent_threes(puzzle, row, col):
-    '''
-    This function handles the situation where two adjacent cells (either
-    horizontal, vertical, or diagonal from each other) have '3' values.
-    In these cases we can fill in some of the slots with links and/or 'x'
-    values, although we can't fully assign links.
-    '''
-
     if puzzle.get_board(row, col) != '3':
         return
 
@@ -192,11 +158,6 @@ def cellfunc_handle_diagonal_ones(puzzle, row, col):
 
 
 def cellfunc_handle_diagonal_chains(puzzle, row, col):
-    '''
-    This function handles diagonal chains of cells with numbers, where the
-    ends have '3' values, and intermediate values of '2' values, etc.
-    '''
-
     if puzzle.get_board(row, col) != '3':
         return
 
@@ -237,12 +198,6 @@ def cellfunc_handle_diagonal_chains(puzzle, row, col):
 
 
 def cellfunc_handle_links_threes(puzzle, row, col):
-    '''
-    This function handles the case where a '3' cell has two 'x' values
-    surrounding one corner, and the case where a '3' cell has a link
-    coming into one corner of the cell.
-    '''
-
     cellval = puzzle.get_board(row, col)
     if cellval != '3':
         return
@@ -277,14 +232,6 @@ def cellfunc_handle_links_threes(puzzle, row, col):
 
 
 def dotfunc_avoid_multiple_loops(puzzle, row, col):
-    '''
-    This helper function places 'x' values between dots that are joined by
-    the same path, to prevent multiple closed loops from being created.
-    '''
-
-    # If there is only one path, we don't mind closing it.  (Not quite right;
-    # the path also needs to pass by all cells with values in them, but this
-    # is good enough.)
     if len(puzzle.path_dots) == 1:
         return
 
@@ -311,14 +258,6 @@ def dotfunc_avoid_multiple_loops(puzzle, row, col):
 
 
 def cellfunc_handle_closed_corners(puzzle, row, col):
-    '''
-    This helper function handles cases where a corner of a cell is fully
-    closed off (i.e. the cell has 'x' values on two adjacent sides).  This
-    is an unusual situation and is already partially covered by other cases,
-    but this helps when numbers are in the corners of the puzzles, or when
-    other similar cases arise in the middle of the puzzle.
-    '''
-
     cellval = puzzle.get_board(row, col)
     if cellval == ' ':
         return
@@ -348,17 +287,6 @@ def cellfunc_handle_closed_corners(puzzle, row, col):
 
 class Puzzle:
     def __init__(self, rows, cols, cell_values):
-        '''
-        The cells value must be a list of strings, where each string is of
-        length cols, and there are rows strings in the list.
-        '''
-        self.rows = rows
-        self.cols = cols
-
-        # Build up the board, which includes elements for the dots, the
-        # cells containing numbers, and finally the 'x' or link values
-        # between the dots.
-
         self.board_width = 2 * (cols + 1) + 1
         self.board_height = 2 * (rows + 1) + 1
         self.board = bytearray()
@@ -404,9 +332,6 @@ class Puzzle:
         self.dot_paths = {}
         self.path_dots = {}
 
-        # This value is used to keep track if the puzzle state has
-        # been changed.  If we attempt to apply solution rules and
-        # no changes are made, we must start guessing.
         self.changed = False
         self.change_count = 0
 
@@ -458,38 +383,23 @@ class Puzzle:
 
 
     def is_changed(self):
-        '''
-        Reports if the board has been changed since the last time
-        the "changed" flag was cleared.
-        '''
         return self.changed
 
 
     def set_changed(self, value = True):
-        '''
-        Sets the "changed" flag as specified (defaults to True).
-        '''
         self.changed = value
 
 
     def clear_changed_count(self):
-        '''
-        Clears the "changed" flag, and resets the "change-count" value to 0.
-        '''
         self.changed = False
         self.change_count = 0
 
 
     def get_board_as_string(self):
-        # row_strs = map(lambda r: ''.join(r), self.board)
-        # return '\n'.join(row_strs)
         return str(self.board)
 
 
     def print_slither(self, include_xes = True, include_numbers = True):
-        '''
-        print out the slither puzzle board.
-        '''
         print("Puzzle size:  %d x %d" % (self.rows, self.cols))
 
         for r in range(1, 2 * self.rows + 2):
@@ -543,11 +453,6 @@ class Puzzle:
 
 
     def can_solve(self):
-        '''
-        Iterate over the cells in the puzzle board.  If any cell with a
-        number is already constrained such that it CANNOT have the
-        specified number of links then report false.
-        '''
         for r in range(2, 2 * self.rows + 1, 2):
             for c in range(2, 2 * self.cols + 1, 2):
                 val = self.get_board(r, c)
@@ -708,10 +613,6 @@ class Puzzle:
         self.iter_cells(cellfunc_handle_closed_corners)
 
     def handle_diagonal_chains(self):
-        '''
-        Attempts to identify [3, 2, 2, ..., 2, 3] diagonal chains, which
-        allow us to put two links on each end of the chain.
-        '''
         self.iter_cells(cellfunc_handle_diagonal_chains)
 
     def check_row_links(self):
@@ -764,15 +665,6 @@ class Puzzle:
 
 
     def iter_solve(self, verbose=False):
-        '''
-        Attempt to solve the puzzle by iteratively applying the rules
-        encoded in the various helper functions.  If we make it through
-        a loop without making any changes then we stop trying.  This
-        could signal that we found the solution, or that we reached the
-        extent of what we can solve with the simple rules, or that we
-        reached an invalid board configuration.
-        '''
-
         operations = [
             (self.handle_closed_corners, "Handling closed corners"),
             (self.fill_in_xes, "Filling in x-es based on cell values"),
