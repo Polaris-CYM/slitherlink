@@ -2,7 +2,6 @@ import numpy as np
 from problem_define import slitherlink
 from generate_problem import *
 
-
 def find_start(problem):
     '''
     find where to start, return the index of row and col
@@ -21,7 +20,6 @@ def find_start(problem):
         return start_row, start_col
     else:
         raise ValueError("problem约束中没有3，需要进一步修改回溯算法中的find_start函数")
-
 
 def judge_direction(pos1, pos2):
     '''
@@ -45,8 +43,7 @@ def judge_direction(pos1, pos2):
     else:
         return ValueError('In function judge_direction: value of pos1 or pos2 is not valid')
 
-
-def determine_what_direction(dir):
+def turn_left(dir):
     '''
     determine what direction should be selcted based on the path before
     according to the strtegy that always turn left
@@ -61,10 +58,9 @@ def determine_what_direction(dir):
     elif dir == 'up':
         return 'left'
     else:
-        raise ValueError('In function determine_what_direction: the value of dir', dir, 'is not valid')
+        raise ValueError('In function turn_left: the value of dir', dir, 'is not valid')
     
-
-def next_direction(dir):
+def turn_right(dir):
     '''
     return the direction on the right side
     '''
@@ -77,8 +73,17 @@ def next_direction(dir):
     elif dir == 'down':
         return 'left'
     else:
-        raise ValueError('In function next_direction: the value of dir', dir, 'is not valid')
+        raise ValueError('In function turn_right: the value of dir', dir, 'is not valid')
 
+def opposite_dir(dir):
+    if dir == 'down':
+        return 'up'
+    if dir == 'up':
+        return 'down'
+    if dir == 'left':
+        return 'right'
+    if dir == 'right':
+        return 'left'
 
 def remain_allow(remain, current_pos, next_dir):
     '''
@@ -88,49 +93,19 @@ def remain_allow(remain, current_pos, next_dir):
     '''
     nrow, ncol = remain.shape
     next_pos = cal_next_pos(current_pos, next_dir)
-    if pos_legal(next_pos, nrow, ncol) == False:
+    if point_pos_legal(next_pos, nrow, ncol) == False:
         # 如果下一个落脚点超出了棋盘范围
         return False # 不能朝着这个方向走
-    
-    if next_dir == 'down':
-        pos_a = (next_pos[0]-1, next_pos[1]-1)
-        pos_b = (next_pos[0]-1, next_pos[1])
-        if pos_legal2(pos_a, nrow, ncol):
-            if remain[pos_a] in ['0']:
-                return False
-        if pos_legal2(pos_b, nrow, ncol):
-            if remain[pos_b] in ['0']:
-                return False
-    if next_dir == 'up':
-        pos_a = (next_pos[0], next_pos[1]-1)
-        pos_b = (next_pos[0], next_pos[1])
-        if pos_legal2(pos_a, nrow, ncol):
-            if remain[pos_a] in ['0']:
-                return False
-        if pos_legal2(pos_b, nrow, ncol):
-            if remain[pos_b] in ['0']:
-                return False
-    if next_dir == 'left':
-        pos_a = (next_pos[0]-1, next_pos[1])
-        pos_b = (next_pos[0], next_pos[1])
-        if pos_legal2(pos_a, nrow, ncol):
-            if remain[pos_a] in ['0']:
-                return False
-        if pos_legal2(pos_b, nrow, ncol):
-            if remain[pos_b] in ['0']:
-                return False
-    if next_dir == 'right':
-        pos_a = (next_pos[0]-1, next_pos[1]-1)
-        pos_b = (next_pos[0], next_pos[1]-1)
-        if pos_legal2(pos_a, nrow, ncol):
-            if remain[pos_a] in ['0']:
-                return False
-        if pos_legal2(pos_b, nrow, ncol):
-            if remain[pos_b] in ['0']:
-                return False
-    
-    return True
 
+    pos_a, pos_b = cal_pos_ab(current_pos, next_dir)
+    if digit_pos_legal(pos_a, nrow, ncol):
+        if remain[pos_a] == '0':
+            return False
+    if digit_pos_legal(pos_b, nrow, ncol):
+        if remain[pos_b] == '0':
+            return False
+
+    return True
 
 def last_possible_direction(dir):
     '''
@@ -146,7 +121,6 @@ def last_possible_direction(dir):
         return 'right'
     else:
         raise ValueError('In function last_possible_direction: the value of dir', dir, 'is not valid')
-
 
 def cal_next_pos(pos, dir):
     '''
@@ -167,8 +141,7 @@ def cal_next_pos(pos, dir):
     else:  # dir == 'down'
         return (r+1, c)
 
-
-def pos_legal(pos, nrow, ncol):
+def point_pos_legal(pos, nrow, ncol):
     '''
     return True or False
     '''
@@ -178,8 +151,7 @@ def pos_legal(pos, nrow, ncol):
     else:
         return False
 
-
-def pos_legal2(pos, nrow, ncol):
+def digit_pos_legal(pos, nrow, ncol):
     '''
     return True or False
     '''
@@ -189,28 +161,25 @@ def pos_legal2(pos, nrow, ncol):
     else:
         return False
 
-
-def minus_one(c):
-    if c == '1':
+def minus_one(num):
+    if num == '1':
         return '0'
-    elif c == '2':
+    elif num == '2':
         return '1'
-    elif c == '3':
+    elif num == '3':
         return '2'
-    elif c == '*':
+    elif num == '*':
         return '*'
 
-
-def opposite_dir(dir):
-    if dir == 'down':
-        return 'up'
-    if dir == 'up':
-        return 'down'
-    if dir == 'left':
-        return 'right'
-    if dir == 'right':
-        return 'left'
-
+def add_one(num):
+    if num == '0':
+        return '1'
+    elif num == '1':
+        return '2'
+    elif num == '2':
+        return '3'
+    elif num == '*':
+        return '*'
 
 def output_status(remain, point_path, dir_path):
     print('\n*********')
@@ -219,10 +188,29 @@ def output_status(remain, point_path, dir_path):
     print('dir path:', dir_path)
     print('***********\n')
 
+def cal_pos_ab(current_pos, next_dir):
+    '''
+    计算下一步两边的数字的index
+    '''
+    next_pos = cal_next_pos(current_pos, next_dir)
+
+    if next_dir == 'down':
+        pos_a = (next_pos[0]-1, next_pos[1]-1)
+        pos_b = (next_pos[0]-1, next_pos[1])
+    elif next_dir == 'up':
+        pos_a = (next_pos[0], next_pos[1]-1)
+        pos_b = (next_pos[0], next_pos[1])
+    elif next_dir == 'left':
+        pos_a = (next_pos[0]-1, next_pos[1])
+        pos_b = (next_pos[0], next_pos[1])
+    elif next_dir == 'right':
+        pos_a = (next_pos[0]-1, next_pos[1]-1)
+        pos_b = (next_pos[0], next_pos[1]-1)
+    
+    return pos_a, pos_b
 
 def construct_solution(problem, point_path):
     return True
-
 
 def backtracking_solve(problem):
     '''
@@ -236,63 +224,48 @@ def backtracking_solve(problem):
     current_pos = (start_row, start_col)  # 当前位置
     
     # 先向下走，向下画loop
-    pos = cal_next_pos(current_pos, 'down')
-    point_path.append(pos)
-    dir_path.append('down')
+    next_dir = 'down'
+    if not remain_allow(remain, current_pos, next_dir): # 如果不能向下走（只可能因为03连一起）就向右边走
+        next_dir = 'right'
+    
+    pos_a, pos_b = cal_pos_ab(current_pos, next_dir)
+    if digit_pos_legal(pos_a):
+        remain[pos_a] = minus_one(remain[pos_a])
+    if digit_pos_legal(pos_b):
+        remain[pos_b] = minus_one(remain[pos_b])
 
-    # 更新remain
-    remain[current_pos] = minus_one(remain[current_pos])
-    start_flag = 0
-    if pos_legal2((current_pos[0], current_pos[1]-1), nrow, ncol):
-        if remain[current_pos[0], current_pos[1]-1] == '0':
-            start_flag = 12345
-        else:
-            start_flag = 0
-            remain[current_pos[0], current_pos[1]-1] = minus_one(remain[current_pos[0], current_pos[1]-1])
-        
-    current_pos = pos
+    next_pos = cal_next_pos(current_pos, next_dir)
+    point_path.append(next_pos)
+    dir_path.append(next_dir)
+    current_pos = next_pos
 
-    backtrack_type = 1  
+    backtrack_type = 1
     # type=1是初始时刻往下走，或者新探索某个点
     # type=2是以前走过，后来这条路走不通，要换个方向
 
     while True:
         output_status(remain, point_path, dir_path)
-
-        if start_flag == 12345: # 第一步就不该向下走
-            break
         
         if backtrack_type == 1: # 初次探索这个点
             last_dir = dir_path[-1] # 上一步的方向
-            next_dir = determine_what_direction(last_dir) # 根据上一步方向向左转
-            last_flag = 1
+            next_dir = turn_left(last_dir) # 根据上一步方向向左转
 
             while not remain_allow(remain, current_pos, next_dir): # 只有当 remain/界面大小 不允许的情况才会循环
-                last_flag = 1
-                next_dir = next_direction(next_dir)
+                next_dir = turn_right(next_dir) # 向右转，尝试下一个方向
                 if last_dir == opposite_dir(next_dir):
-                    last_flag = 2
                     break
+
+            last_flag = 2 if last_dir == opposite_dir(next_dir) else 1
 
             if last_flag == 1: # 旋转旋转，还没转一圈，还可以继续尝试
                 next_pos = cal_next_pos(current_pos, next_dir) # 根据对应方向，计算下一个落脚点
-            
+                
                 # update remain
-                if next_dir == 'down':
-                    pos_a = (next_pos[0]-1, next_pos[1]-1)
-                    pos_b = (next_pos[0]-1, next_pos[1])
-                elif next_dir == 'up':
-                    pos_a = (next_pos[0], next_pos[1]-1)
-                    pos_b = (next_pos[0], next_pos[1])
-                elif next_dir == 'left':
-                    pos_a = (next_pos[0]-1, next_pos[1])
-                    pos_b = (next_pos[0], next_pos[1])
-                elif next_dir == 'right':
-                    pos_a = (next_pos[0]-1, next_pos[1]-1)
-                    pos_b = (next_pos[0], next_pos[1]-1)
-
-                remain[pos_a] = minus_one(remain[pos_a])
-                remain[pos_b] = minus_one(remain[pos_b])
+                pos_a, pos_b = cal_pos_ab(current_pos, next_dir)
+                if digit_pos_legal(pos_a):
+                    remain[pos_a] = minus_one(remain[pos_a])
+                if digit_pos_legal(pos_b):
+                    remain[pos_b] = minus_one(remain[pos_b])
 
                 point_path.append(next_pos)
                 dir_path.append(next_dir)
@@ -306,6 +279,7 @@ def backtracking_solve(problem):
                         backtrack_type = 2
                         point_path = point_path[:-1] # 删掉最后一步
                         dir_path = dir_path[:-1] # 删掉最后一步
+                        current_pos = point_path[-1]
                         continue # 回到while true循环
             
                 if next_pos in point_path: # 交叉了，但不是一个loop（因为如果是loop，就会进入前面一个if分支）
@@ -313,6 +287,7 @@ def backtracking_solve(problem):
                     backtrack_type = 2
                     point_path = point_path[:-1] # 删掉最后一步
                     dir_path = dir_path[:-1] # 删掉最后一步
+                    current_pos = point_path[-1]
                     continue # 回到while true循环
 
             else: # last_flag == 2, 转了一圈转回来了，要回溯了
@@ -320,16 +295,17 @@ def backtracking_solve(problem):
                 backtrack_type = 2
                 point_path = point_path[:-1] # 删掉最后一步
                 dir_path = dir_path[:-1] # 删掉最后一步
+                current_pos = point_path[-1]
                 continue # 回到while true循环
 
         if backtrack_type == 2: # 不是第一次探索这个点，根据上一次选的方向继续调整
             last_dir = dir_path[-1] # 上一步的方向
-            next_dir = next_direction(cur_dir_last_try) # 根据上一步方向向左转
+            next_dir = turn_right(cur_dir_last_try) # 根据上一步方向向左转
             last_flag = 2 if last_dir == opposite_dir(next_dir) else 1
 
             while not remain_allow(remain, current_pos, next_dir): # 只有当 remain/界面大小 不允许的情况才会循环
                 last_flag = 1
-                next_dir = next_direction(next_dir)
+                next_dir = turn_right(next_dir)
                 if last_dir == opposite_dir(next_dir):
                     last_flag = 2
                     break
@@ -338,19 +314,7 @@ def backtracking_solve(problem):
                 next_pos = cal_next_pos(current_pos, next_dir) # 根据对应方向，计算下一个落脚点
             
                 # update remain
-                if next_dir == 'down':
-                    pos_a = (next_pos[0]-1, next_pos[1]-1)
-                    pos_b = (next_pos[0]-1, next_pos[1])
-                elif next_dir == 'up':
-                    pos_a = (next_pos[0], next_pos[1]-1)
-                    pos_b = (next_pos[0], next_pos[1])
-                elif next_dir == 'left':
-                    pos_a = (next_pos[0]-1, next_pos[1])
-                    pos_b = (next_pos[0], next_pos[1])
-                elif next_dir == 'right':
-                    pos_a = (next_pos[0]-1, next_pos[1]-1)
-                    pos_b = (next_pos[0], next_pos[1]-1)
-
+                pos_a, pos_b = cal_pos_ab(current_pos, next_dir)
                 remain[pos_a] = minus_one(remain[pos_a])
                 remain[pos_b] = minus_one(remain[pos_b])
 
@@ -368,6 +332,7 @@ def backtracking_solve(problem):
                         backtrack_type = 2
                         point_path = point_path[:-1] # 删掉最后一步
                         dir_path = dir_path[:-1] # 删掉最后一步
+                        current_pos = point_path[-1]
                         continue # 回到while true循环
             
                 if next_pos in point_path: # 交叉了，但不是一个loop（因为如果是loop，就会进入前面一个if分支）
@@ -375,6 +340,7 @@ def backtracking_solve(problem):
                     backtrack_type = 2
                     point_path = point_path[:-1] # 删掉最后一步
                     dir_path = dir_path[:-1] # 删掉最后一步
+                    current_pos = point_path[-1]
                     continue # 回到while true循环
 
             else: # last_flag == 2, 转一圈转回来了
@@ -382,10 +348,12 @@ def backtracking_solve(problem):
                 point_path = point_path[:-1]
                 dir_path = dir_path[:-1]
                 backtrack_type = 2
+                current_pos = point_path[-1]
         
 
 if __name__ == '__main__':
-    overall_limit = '22****3*223**23***3*3****'
+    # overall_limit = '22****3*223**23***3*3****'
+    overall_limit = '3**23*****2*203*23***23*3'
     problem = slitherlink(5, 5, constraint=np.array(list(overall_limit)).reshape(5, 5))
     # problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=4')
     problem.print_problem()
