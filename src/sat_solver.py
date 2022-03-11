@@ -1,7 +1,9 @@
 import time
+from sqlalchemy import true
 from z3 import *
 from problem_define import slitherlink
 from generate_problem import *
+from backjumping import *
 
 def find_digit_neighbor(nrow, ncol, digit_row, digit_col):
     '''返回digit数字周围的四个边的坐标'''
@@ -50,6 +52,10 @@ def add_constraint_digit(s, problem, rs_list, cs_list):
                 case3 = And(Not(rs_list[rs1]), Not(rs_list[rs2]), cs_list[cs1], Not(cs_list[cs2]))
                 case4 = And(Not(rs_list[rs1]), Not(rs_list[rs2]), Not(cs_list[cs1]), cs_list[cs2])
                 s.add(Or(case1, case2, case3, case4))
+            elif digit == '0':
+                rs1, rs2, cs1, cs2 = find_digit_neighbor(nrow, ncol, row, col)
+                # 四个都全为0
+                s.add(And(Not(rs_list[rs1]), Not(rs_list[rs2]),Not(cs_list[cs1]), Not(cs_list[cs2])))
             # else: # digit == '*'
             #     continue  # 不需要操作
 
@@ -270,6 +276,99 @@ def add_constraint_naive(s, nrow, ncol, rs_list, cs_list):
                 s.add(Or(case1, case2, case3, case4))
 
 
+def add_constraint_forbid_force(s, problem, rs_list, cs_list):
+    nrow, ncol = problem.nrow, problem.ncol
+    remain = problem.constraint.copy()
+    row_forbid, col_forbid = find_forbid(remain)
+    row_force, col_force = find_force(remain)
+
+    for row_pos in row_forbid:
+        s.add(Not(rs_list[row_pos]))
+    for col_pos in col_forbid:
+        s.add(Not(cs_list[col_pos]))
+    for row_pos in row_force:
+        s.add(rs_list[row_pos])
+    for col_pos in col_force:
+        s.add(cs_list[col_pos])
+
+
+def is_legal_solution(problem):
+    # 每一个解里面的所有边的point的坐标值
+    # 例如第一条横边的四个值是 0001，从point(0,0)到point(0,1)
+    start_row, start_col, end_row, end_col = [], [], [], []
+    edge_count = 0 # 有多少条被选出来的边的数量，可能有多个环的边的数量
+    for row in range(problem.nrow+1):
+        for col in range(problem.ncol):
+            if problem.row_solution[row,col] == 1:
+                edge_count += 1
+                start_row.append(row)
+                start_col.append(col)
+                end_row.append(row)
+                end_col.append(col+1)
+    for row in range(problem.nrow):
+        for col in range(problem.ncol+1):
+            if problem.col_solution[row,col] == 1:
+                edge_count += 1
+                start_row.append(row)
+                start_col.append(col)
+                end_row.append(row+1)
+                end_col.append(col)
+    
+    # 第一步的坐标
+    first_pos = (start_row[0], start_col[0])
+    next_pos = (end_row[0], end_col[0])
+    # 每一条边是否还能被选
+    can_select = [True] * edge_count
+    can_select[0] = False # 第一条边已经选了
+    # 实际构成环的边数
+    count = 1
+
+    while True:
+        for idx in range(edge_count):
+            if can_select[idx] and start_row[idx] == next_pos[0] and start_col[idx] == next_pos[1]:
+                # 如果后面哪条边的start坐标能接上前一步的next_pos坐标
+                next_pos = (end_row[idx], end_col[idx]) # 更新next_pos
+                count += 1
+                can_select[idx] = False
+                break
+            if can_select[idx] and end_row[idx] == next_pos[0] and end_col[idx] == next_pos[1]:
+                # 如果后面哪条边的end坐标能接上前一步的next_pos坐标
+                next_pos = (start_row[idx], start_col[idx]) # 更新next_pos
+                count += 1
+                can_select[idx] = False
+                break
+        if next_pos[0]==first_pos[0] and next_pos[1] == first_pos[1]:
+            # 如果构成了一个环，那么就跳出while循环
+            break # 跳出while循环
+    
+    if count == edge_count:
+        return True
+    else:
+        return False
+
+def output_solution(s_model, problem, rs_list, cs_list):
+    nrow, ncol = problem.nrow, problem.ncol
+    # 初始化，归零
+    problem.row_solution = np.zeros(shape=(nrow+1, ncol))
+    problem.col_solution = np.zeros(shape=(nrow, ncol+1))
+    # 根据s_model赋值
+    for row in range(nrow+1):
+        for col in range(ncol):
+            if s_model.eval(rs_list[row,col]):
+                problem.row_solution[row,col] = 1
+    for row in range(nrow):
+        for col in range(ncol+1):
+            if s_model.eval(cs_list[row,col]):
+                problem.col_solution[row,col] = 1 
+    
+    if is_legal_solution(problem):
+        # 输出
+        problem.print_solution()
+        return True
+    else:
+        return False
+
+
 def sat_solve(problem):
     nrow, ncol = problem.nrow, problem.ncol
 
@@ -287,26 +386,39 @@ def sat_solve(problem):
     cs_list = np.array([Bool(cs_name) for cs_name in cs_name_list]).reshape((nrow, ncol+1))
 
     s = Solver()
+    add_constraint_forbid_force(s, problem, rs_list, cs_list)  # 增加必选必不选
     add_constraint_digit(s, problem, rs_list, cs_list)  # 根据数字添加约束
     add_constraint_naive(s, nrow, ncol, rs_list, cs_list)  # 添加构成环的约束
-    if s.check() == z3.sat:
-        result = s.model()
-        for row in range(nrow+1):
-            for col in range(ncol):
-                if result.eval(rs_list[row,col]):
-                    problem.row_solution[row,col] = 1
-        for row in range(nrow):
-            for col in range(ncol+1):
-                if result.eval(cs_list[row,col]):
-                    problem.col_solution[row,col] = 1 
-        problem.print_solution()
+    result = []
 
+    # 验证多个解
+    while s.check() == z3.sat:
+        # https://stackoverflow.com/questions/11867611/z3py-checking-all-solutions-for-equation
+        m = s.model()
+        if output_solution(m, problem, rs_list, cs_list):
+            # 如果已经产生合法解，就退出
+            return True
+        result.append(m)
+        block = []
+        for d in m:
+            # d is a declaration
+            if d.arity() > 0:
+                raise Z3Exception("uninterpreted functions are not supported")
+            # create a constant from declaration
+            c = d()
+            if is_array(c) or c.sort().kind() == Z3_UNINTERPRETED_SORT:
+                raise Z3Exception("arrays and uninterpreted sorts are not supported")
+            block.append(c != m[d])
+        s.add(Or(block))
+
+    return False
 
 if __name__ == '__main__':
     # overall_limit = '222333'  #2*3
-    overall_limit = '323*221**3233213'
-    nrow, ncol = 4,4
-    problem = slitherlink(nrow, ncol, constraint=np.array(list(overall_limit)).reshape(nrow, ncol))
+    # overall_limit = '323*221**3233213'
+    # nrow, ncol = 4,4
+    # problem = slitherlink(nrow, ncol, constraint=np.array(list(overall_limit)).reshape(nrow, ncol))
+    problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=0')
     problem.print_problem()
 
     start_time = time.time()
