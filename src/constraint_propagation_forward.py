@@ -359,7 +359,7 @@ def constraint_propagation_forward(problem):
             
             last_flag = 2 if last_dir == opposite_dir(next_dir) else 1
 
-            if last_flag == 1:
+            if last_flag == 1 and (last_dir not in get_force_direction(current_pos, force_direction_list)):
                 # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=9)
                 next_pos = cal_next_pos(current_pos, next_dir) # 根据对应方向，计算下一个落脚点
             
@@ -454,5 +454,3 @@ if __name__ == '__main__':
     print('end time: {}'.format(end_time))
     print('time cost: {}'.format(end_time-start_time))
     # problem.print_solution()
-
-
