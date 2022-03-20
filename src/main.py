@@ -3,7 +3,7 @@ from generate_problem import *
 from backtracking import backtracking_solve
 from backjumping import backjumping_solve
 from constraint_propagation_forward import constraint_propagation_forward
-from sat_solve4 import sat_solve
+from sat_solve import sat_solve
 from minizinc_solve import minizinc_solve
 
 if __name__ == '__main__':
