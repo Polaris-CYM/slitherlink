@@ -3,7 +3,7 @@ from generate_problem import *
 from backtracking import backtracking_solve
 from backjumping import backjumping_solve
 from constraint_propagation_forward import constraint_propagation_forward
-from sat_solve import sat_solve
+from sat_solver import sat_solve
 from minizinc_solve import minizinc_solve
 
 if __name__ == '__main__':
@@ -35,7 +35,7 @@ if __name__ == '__main__':
         minizinc_solve(problem, "chuffed")
         chuf_time = time.time() - start_time
 
-        alltime.append([bt_time, bj_time, cf_time, sat_time, ge_time, chuf_time])
+        alltime.append([bt_time, bj_time, cf_time, sat_time, chuf_time])
 
         print("="*50)
         print(alltime)

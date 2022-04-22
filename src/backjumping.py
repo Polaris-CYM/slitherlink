@@ -143,7 +143,7 @@ def find_force(remain):
                         if col_solution_pos_legal((row+1,col+1), nrow, ncol):
                             col_force.append((row+1,col+1))
     
-    return row_force, col_force, best_case, 
+    return row_force, col_force
 
 
 def forbid_allow(current_pos, next_dir, row_forbid, col_forbid):
@@ -155,7 +155,33 @@ def forbid_allow(current_pos, next_dir, row_forbid, col_forbid):
         return False if current_pos in col_forbid else True
     if next_dir == 'up':
         return False if (current_pos[0]-1,current_pos[1]) in col_forbid else True
-    
+
+def construct_jump_solution(problem, point_path):
+    '''
+    根据point_path构建problem的解
+    '''
+    # 初始化为0
+    problem.row_solution = np.zeros(shape=(problem.nrow+1, problem.ncol))
+    problem.col_solution = np.zeros(shape=(problem.nrow, problem.ncol+1))
+
+    path_len = len(point_path)
+    for i in range(path_len - 1):
+        start_point = point_path[i]
+        end_point = point_path[i+1]
+        dir = judge_direction(start_point, end_point)
+
+        if dir == 'right':
+            problem.row_solution[start_point] = 1
+        elif dir == 'left':
+            problem.row_solution[end_point] = 1
+        elif dir == 'down':
+            problem.col_solution[start_point] = 1
+        elif dir == 'up':
+            problem.col_solution[end_point] = 1
+    print()
+    print('BACKJUMPING SOLUTION:')
+    problem.print_solution()
+    return True
 
 def backjumping_solve(problem):
     '''
@@ -255,7 +281,7 @@ def backjumping_solve(problem):
                     # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=3)
                     if not(('1' in remain) or ('2' in remain) or ('3' in remain)): # 合法解
                         # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=4)
-                        construct_solution(problem, point_path)
+                        construct_jump_solution(problem, point_path)
                         return True
                     else: # 构成一个循环，但是还有数字没有消灭
                         # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=5)
@@ -340,7 +366,7 @@ def backjumping_solve(problem):
                     # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=10)
                     if not(('1' in remain) or ('2' in remain) or ('3' in remain)): # 合法解
                         # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=11)
-                        construct_solution(problem, point_path)
+                        construct_jump_solution(problem, point_path)
                         return True
                     else: # 构成一个循环，但是还有数字没有消灭
                         # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=12)

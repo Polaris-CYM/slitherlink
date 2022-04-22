@@ -362,7 +362,9 @@ def output_solution(s_model, problem, rs_list, cs_list):
                 problem.col_solution[row,col] = 1 
     
     if is_legal_solution(problem):
-        # 输出
+        # output solution
+        print()
+        print("SAT SOLUTION:")
         problem.print_solution()
         return True
     else:

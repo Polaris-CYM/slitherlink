@@ -91,6 +91,8 @@ def minizinc_solve(problem, solver_name):
     result = instance.solve()
     problem.row_solution = np.array(result["rs"])
     problem.col_solution = np.array(result["cs"])
+    print()
+    print("MINIZINC SOLUTION")
     problem.print_solution()
 
 

@@ -213,7 +213,7 @@ def cal_pos_ab(current_pos, next_dir):
     
     return pos_a, pos_b
 
-def construct_solution(problem, point_path):
+def construct_track_solution(problem, point_path):
     '''
     根据point_path构建problem的解
     '''
@@ -236,7 +236,7 @@ def construct_solution(problem, point_path):
         elif dir == 'up':
             problem.col_solution[end_point] = 1
     print()
-    print('SOLUTION:')
+    print('BACKTRACKING SOLUTION:')
     problem.print_solution()
     return True
 
@@ -335,7 +335,7 @@ def backtracking_solve(problem):
                     # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=3)
                     if not(('1' in remain) or ('2' in remain) or ('3' in remain)): # 合法解
                         # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=4)
-                        construct_solution(problem, point_path)
+                        construct_track_solution(problem, point_path)
                         return True
                     else: # 构成一个循环，但是还有数字没有消灭
                         # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=5)
@@ -419,7 +419,7 @@ def backtracking_solve(problem):
                     # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=10)
                     if not(('1' in remain) or ('2' in remain) or ('3' in remain)): # 合法解
                         # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=11)
-                        construct_solution(problem, point_path)
+                        construct_track_solution(problem, point_path)
                         return True
                     else: # 构成一个循环，但是还有数字没有消灭
                         # output_status(backtrack_type, remain, point_path, dir_path, current_pos, next_dir, here=12)
