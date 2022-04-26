@@ -8,6 +8,10 @@ Windows
   * Downloaded from: https://www.minizinc.org/ide/
 ### Required Python Packages
 ```Python
+pip install -r requirements.txt
+```
+OR
+```Python
 pip install numpy
 ```
 ```Python
