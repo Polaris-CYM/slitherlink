@@ -7,25 +7,21 @@ Windows
 * Minizinc IDE(Bundled)
   * Downloaded from: https://www.minizinc.org/ide/
 ### Required Python Packages
-```Python
-pip install -r requirements.txt
-```
+
+`pip install -r requirements.txt`
+
 OR
-```Python
-pip install numpy
-```
-```Python
-pip install beautifulsoup4==4.10.0
-```
-```Python
-pip install minizinc
-```
-```Python
-pip install z3-solver
-```
-```Python
-pip install requests==2.23.0
-```
+
+`pip install numpy`
+
+`pip install beautifulsoup4==4.10.0`
+
+`pip install minizinc`
+
+`pip install z3-solver`
+
+`pip install requests==2.23.0`
+
 ### Configuration of Environment Variables
 Right click on 'This PC' -> Properties -> Advanced system settings -> Environment Variables -> 'Path' (under System variables) ->
 Add the path of the installed Minizinc IDE to the 'Path'
