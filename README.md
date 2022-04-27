@@ -34,3 +34,5 @@ Add the path of the installed Minizinc IDE to the 'Path'
 * Open the Command Prompt
 * Go to the folder where the main.py file is located
 * Using  `python main.py` to run the program (Tips: The program will automatically execute 6 algorithms 10 times before stopping.)
+
+Note: When using IDEs such as pycharm or vscode, there is a certain chance that the Gecode solver cannot be run, causing the program to interrupt and report an error, so it is recommended to use the command prompt to run this program.
