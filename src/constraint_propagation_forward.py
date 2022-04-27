@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from pyparsing import col
+# from pyparsing import col
 from problem_define import slitherlink
 from generate_problem import *
 from backtracking import *
@@ -207,7 +207,7 @@ def construct_prop_solution(problem, point_path):
         elif dir == 'up':
             problem.col_solution[end_point] = 1
     print()
-    print('PROPAGATION SOLUTION:')
+    print('FORWARD CHECKING SOLUTION:')
     problem.print_solution()
     return True
 

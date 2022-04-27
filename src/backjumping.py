@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from pyparsing import col
+# from pyparsing import col
 from problem_define import slitherlink
 from generate_problem import *
 from backtracking import *

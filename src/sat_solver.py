@@ -1,5 +1,5 @@
 import time
-from sqlalchemy import true
+# from sqlalchemy import true
 from z3 import *
 from problem_define import slitherlink
 from generate_problem import *

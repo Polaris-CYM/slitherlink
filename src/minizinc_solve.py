@@ -5,7 +5,7 @@ from minizinc import Instance, Model, Solver
 
 
 def constraint_to_remain(constraint):
-    # constraint 是字符串的二维数组，要转化为list的形式
+    # "constraint" is a two-dimensional array of strings, which needs to be converted into a list
     nrow, ncol = constraint.shape
     remain = []
     for i in range(nrow):
@@ -28,7 +28,7 @@ def constraint_to_remain(constraint):
 def minizinc_solve(problem, solver_name):
     model = Model()
 
-    # 所有题都要加这些约束，里面的nrow和ncol在后面传参数进去
+    # All puzzles must add these constraints, and the nrow and ncol inside will be passed parameters later.
     model.add_string("""
         int: nrow;
         int: ncol;
@@ -83,7 +83,7 @@ def minizinc_solve(problem, solver_name):
     solver = Solver.lookup(solver_name)
     instance = Instance(solver, model)
 
-    # 传参数进去
+    # pass parameters
     instance["nrow"] = problem.nrow
     instance["ncol"] = problem.ncol
     instance["remain"] = constraint_to_remain(problem.constraint)

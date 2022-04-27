@@ -10,7 +10,8 @@ def find_start(problem):
     already_find = False
     for i in range(problem.nrow):
         for j in range(problem.ncol):
-            if problem.constraint[i,j] == '3':  # 找一个最早开始的3，因为3的约束条件多，所以尽量找一个大一点的数
+            if problem.constraint[i, j] == '3':  # Find the first "3" in the order from top to bottom, left to right,
+                                                 # because 3 has more constraints and fewer possibilities.
                 start_row = i
                 start_col = j
                 already_find = True
