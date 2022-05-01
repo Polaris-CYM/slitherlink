@@ -7,9 +7,9 @@ from backtracking import *
 
 
 def row_solution_pos_legal(pos, nrow, ncol):
-    '''
-    pos should within [0 ... nrow, 0 ... ncol-1]
-    '''
+    """
+    The positions of the horizontal lines should within [0 ... nrow, 0 ... ncol-1]
+    """
     if 0 <= pos[0] <= nrow and 0<= pos[1] <= ncol - 1:
         return True
     else:
@@ -17,9 +17,9 @@ def row_solution_pos_legal(pos, nrow, ncol):
 
 
 def col_solution_pos_legal(pos, nrow, ncol):
-    '''
-    pos should within [0 ... nrow-1, 0 ... ncol]
-    '''
+    """
+    The positions of the vertical lines should within [0 ... nrow-1, 0 ... ncol]
+    """
     if 0 <= pos[0] <= nrow - 1 and 0<= pos[1] <= ncol:
         return True
     else:

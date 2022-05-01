@@ -1,6 +1,6 @@
 import time
 from generate_problem import *
-from backjumping import *
+from constraint_propagation_forward import *
 from minizinc import Instance, Model, Solver
 
 

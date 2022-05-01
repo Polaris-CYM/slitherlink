@@ -3,7 +3,7 @@ import time
 from z3 import *
 from problem_define import slitherlink
 from generate_problem import *
-from backjumping import *
+from constraint_propagation_forward import *
 
 def find_digit_neighbor(nrow, ncol, digit_row, digit_col):
     '''返回digit数字周围的四个边的坐标'''

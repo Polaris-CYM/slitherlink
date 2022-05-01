@@ -267,9 +267,9 @@ def backtracking_solve(problem):
     initial = True
 
     while True:
+        # If it goes back to the initial point, then the first step should not go down
+        # Modify the following relevant information to restart the loop
         if initial == False and len(point_path) == 1 and first_right == False:
-            # If it goes back to the initial point, then the first step should not go down
-            # Modify the following relevant information to restart the loop
             point_path = [(start_row, start_col)]
             dir_path = []
             remain = problem.constraint.copy()
@@ -359,11 +359,11 @@ def backtracking_solve(problem):
                     remain[pos_a] = add_one(remain[pos_a])
                 if digit_pos_legal(pos_b, nrow, ncol):
                     remain[pos_b] = add_one(remain[pos_b])
-                # 更新path
-                point_path = point_path[:-1] # 删掉最后一步
-                dir_path = dir_path[:-1] # 删掉最后一步
+                # Delete the last step
+                point_path = point_path[:-1]
+                dir_path = dir_path[:-1]
                 current_pos = point_path[-1]
-                # continue # 回到while true循环
+                # continue # Back to the 'while true' loop
 
         if backtrack_type == 2:  # Not the first time to explore this node (turn right according to the last direction that have tried)
             last_dir = dir_path[-1]
@@ -403,6 +403,7 @@ def backtracking_solve(problem):
                             remain[pos_a] = add_one(remain[pos_a])
                         if digit_pos_legal(pos_b, nrow, ncol):
                             remain[pos_b] = add_one(remain[pos_b])
+                        # Delete the last step
                         point_path = point_path[:-1]
                         dir_path = dir_path[:-1]
                         current_pos = point_path[-1]
@@ -416,6 +417,7 @@ def backtracking_solve(problem):
                         remain[pos_a] = add_one(remain[pos_a])
                     if digit_pos_legal(pos_b, nrow, ncol):
                         remain[pos_b] = add_one(remain[pos_b])
+                    # Delete the last step
                     point_path = point_path[:-1]
                     dir_path = dir_path[:-1]
                     current_pos = point_path[-1]
@@ -429,6 +431,7 @@ def backtracking_solve(problem):
                     remain[pos_a] = add_one(remain[pos_a])
                 if digit_pos_legal(pos_b, nrow, ncol):
                     remain[pos_b] = add_one(remain[pos_b])
+                # Delete the last step
                 point_path = point_path[:-1]
                 dir_path = dir_path[:-1]
                 current_pos = point_path[-1]

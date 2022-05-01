@@ -2,7 +2,7 @@ import time
 import numpy as np
 from problem_define import slitherlink
 from generate_problem import *
-from backjumping import *
+from constraint_propagation_forward import *
 
 
 def is_legal_solution(problem):
