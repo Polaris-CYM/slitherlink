@@ -9,24 +9,27 @@ c: constrain, the relationship between x
             2. closed circle
 '''
 
+
 class slitherlink:
     def __init__(self, nrow, ncol, constraint):
         """
-        :param side_len: length of each side
+        :param nrow: length of the rows of the puzzle
+        :param ncol: length of the columns of the puzzle
         :param constraint: a 2-dimention numpy array, with shape=(nrow, ncol)
         """
         self.nrow = nrow
         self.ncol = ncol
-        self.constraint = constraint  # all digit constraints: 0, 1, 2, 3, and *(no limit)
+        self.constraint = constraint  # All digit constraints: 0, 1, 2, 3, and *(no limit)
+
+        # self.row_solution[i,j] (i <= nrow) : the upper edge of constraint[i,j]（i < nrow）
+        # self.col_solution[i,j] : the edge to the left of constraint[i,j]
         # row_solution[i,j] = 1 if the solution includes this horizontal edge
         self.row_solution = np.zeros(shape=(self.nrow+1, self.ncol))  # (r+1) * c
         self.col_solution = np.zeros(shape=(self.nrow, self.ncol+1))  # r * (c+1)
-        # self.row_solution[i,j] (i = nrow) : the upper edge of constraint[i,j]（i!=nrow）   constraint[nrow-1, ncol-1]
-        # self.col_solution[i,j] : the edge to the left of constraint[i,j]
 
     def print_problem(self):
         """
-        print the origin problem (without solution) in the screen
+        Print the origin puzzle (without solution) on the screen
         """
         print("-" * (2 * self.ncol + 1))
         for line in self.constraint:
@@ -35,7 +38,7 @@ class slitherlink:
 
     def print_solution(self):
         """
-        print the solution as well as the origin problem in the screen
+        Print the solution as well as the origin puzzle on the screen
         """
         for i in range(self.nrow):
             up_str = ' '

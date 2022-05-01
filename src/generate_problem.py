@@ -8,19 +8,19 @@ def get_string_from_url(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
     table_element = soup.find('table', id='LoopTable')
-    content = table_element.findAll('tr')  
-    content_list = content[1::2]  # Converted to list. even rows from row 0 are the area where the lines are drawn,
-                                  # so skip them and put numbers in the odd rows.
-    
+    all_rows = table_element.findAll('tr')
+    rows_with_number = all_rows[1::2]  # Converted all rows with numerical restrictions to a list,
+                                       # skip rows where the horizontal lines need to be drawn
+
     overall_limit = ''
     nrow = 0
-    for row in content_list:  # Parse each row (with data)
+    for row in rows_with_number:
         nrow += 1
-        col_content = row.findAll('td')
-        col_content_list = col_content[1::2]
+        all_cols = row.findAll('td')
+        col_with_number = all_cols[1::2]  # Get numbers in each row (delete the part where the vertical lines need to be drawn)
         row_content = ''
-        for col in col_content_list:
-            cell_value = col.string  
+        for col in col_with_number:
+            cell_value = col.string
             # cell_value = None if <td align="center"></td>
             # cell_value = x    if <td align="center">x</td>, where x = 0,1,2,3
             if not cell_value:  # cell_value == None
@@ -42,7 +42,8 @@ def generate_problem_from_url(url):
 
 
 if __name__ == "__main__":
-    problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=0') # Get a random puzzle each time (10*10)
+    # Get a random puzzle each time size=0--5x5 normal, size=4--5x5 hard, size=1--10x10 normal, size=10--7x7 normal
+    problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=0')
     problem.print_problem()
     problem.print_solution()
 
