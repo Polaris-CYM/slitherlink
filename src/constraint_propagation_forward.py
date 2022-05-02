@@ -101,7 +101,7 @@ def find_force(remain):
         col_force.append((nrow-2,ncol))
 
     best_case = False
-    # situation 2: '0' and '3' are connected
+    # situation 3: '0' and '3' are connected
     for row in range(nrow):
         for col in range(ncol):
             if remain[row,col] == '3':
