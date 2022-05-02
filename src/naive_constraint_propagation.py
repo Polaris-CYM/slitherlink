@@ -4,19 +4,20 @@ from problem_define import slitherlink
 from generate_problem import *
 from constraint_propagation_forward import *
 
+"""
+This method only tries to generate a solution based on the edges that must be selected, without backtracking, 
+so there is a high probability that a valid solution will not be generated.
+"""
+
 
 def is_legal_solution(problem):
-    '''
-    区别于sat_solve里面的is_legal_solution，
-    这里的is_legal_solution多了一个update状态。
-    sat_solve里面一定是环，需要判断是否是多个环
-    这里甚至都不能组成环
-    '''
-
-    # 每一个解里面的所有边的point的坐标值
-    # 例如第一条横边的四个值是 0001，从point(0,0)到point(0,1)
+    """
+    Determine whether the generated solution satisfies all constraints
+    """
+    # The row and column coordinates of the starting point and the row and column coordinates
+    # of the end point of each edge in the solution
     start_row, start_col, end_row, end_col = [], [], [], []
-    edge_count = 0 # 有多少条被选出来的边的数量，可能有多个环的边的数量
+    edge_count = 0  # Total number of selected edges
     for row in range(problem.nrow+1):
         for col in range(problem.ncol):
             if problem.row_solution[row,col] == 1:
@@ -33,42 +34,38 @@ def is_legal_solution(problem):
                 start_col.append(col)
                 end_row.append(row+1)
                 end_col.append(col)
-    
+
+    # Digital constraints are not met
     num_sum = np.sum(problem.constraint=='1') + 2*np.sum(problem.constraint=='2') + 3*np.sum(problem.constraint=='3')
     if 2*edge_count < num_sum:
         return False
 
-    # 第一步的坐标
     first_pos = (start_row[0], start_col[0])
     next_pos = (end_row[0], end_col[0])
-    # 每一条边是否还能被选
     can_select = [True] * edge_count
-    can_select[0] = False # 第一条边已经选了
-    # 实际构成环的边数
-    count = 1
+    can_select[0] = False  # The first edge has been selected
+    count = 1  # Number of edges forming the first loop
     update = True
     while update:
         update = False
         for idx in range(edge_count):
             if can_select[idx] and start_row[idx] == next_pos[0] and start_col[idx] == next_pos[1]:
-                # 如果后面哪条边的start坐标能接上前一步的next_pos坐标
-                next_pos = (end_row[idx], end_col[idx]) # 更新next_pos
+                next_pos = (end_row[idx], end_col[idx])
                 count += 1
                 can_select[idx] = False
                 update = True
                 break
             if can_select[idx] and end_row[idx] == next_pos[0] and end_col[idx] == next_pos[1]:
-                # 如果后面哪条边的end坐标能接上前一步的next_pos坐标
-                next_pos = (start_row[idx], start_col[idx]) # 更新next_pos
+                next_pos = (start_row[idx], start_col[idx])
                 count += 1
                 can_select[idx] = False
                 update = True
                 break
+        # If a loop is formed, then jump out of the while loop
         if next_pos[0]==first_pos[0] and next_pos[1] == first_pos[1]:
-            # 如果构成了一个环，那么就跳出while循环
-            break # 跳出while循环
+            break
     
-    if count == edge_count:
+    if count == edge_count:  # The generated loop is the only loop in the solution
         return True
     else:
         return False
@@ -76,7 +73,6 @@ def is_legal_solution(problem):
 
 def naive_constraint_propagation(problem):
     remain = problem.constraint.copy()
-    # row_forbid, col_forbid = find_forbid(remain)
     row_force, col_force = find_force(remain)
 
     for row_sol_pos in row_force:
@@ -103,4 +99,3 @@ if __name__ == '__main__':
     print('start time: {}'.format(start_time))
     print('end time: {}'.format(end_time))
     print('time cost: {}'.format(end_time-start_time))
-    # problem.print_solution()
