@@ -68,43 +68,17 @@ def minizinc_solve(problem, solver_name):
         constraint forall( [rs[i,j+1] + cs[i,j+1] + cs[i-1,j+1] = 1 | i in 2..nrow, j in 1..ncol-1 where rs[i,j] = 1]);
         constraint forall( [rs[i,j-1] + rs[i,j] + cs[i-1,j] = 1 | i in 2..nrow, j in 2..ncol where cs[i,j] = 1]);
         constraint forall( [rs[i+1,j-1] + rs[i+1,j] + cs[i+1,j] = 1 | i in 1..nrow-1, j in 2..ncol where cs[i,j] = 1]);
-        
-        % Edges that need to be forbidden when two 3's are connected
-        constraint forall( [cs[i-1,j+1] + cs[i+1,j+1] = 0 | i in 2..nrow-1, j in 1..ncol-1 where remain[i,j] = 3 /\ remain[i,j+1] = 3]);
-        constraint forall( [rs[i+1,j-1] + rs[i+1,j+1] = 0 | i in 1..nrow-1, j in 2..ncol-1 where remain[i,j] = 3 /\ remain[i+1,j] = 3]);
-        constraint forall( [cs[2,j+1] = 0 | j in 1..ncol-1 where remain[1,j] = 3 /\ remain[1,j+1] = 3]);
-        constraint forall( [cs[nrow-1,j+1] = 0 | j in 1..ncol-1 where remain[nrow,j] = 3 /\ remain[nrow,j+1] = 3]);
-        constraint forall( [rs[i+1,2] = 0 | i in 1..nrow-1 where remain[i,1] = 3 /\ remain[i+1,1] = 3]);
-        constraint forall( [rs[i+1,ncol-1] = 0 | i in 1..nrow-1 where remain[i,ncol] = 3 /\ remain[i+1,ncol] = 3]);
-        
-        % Edges that need to be forbidden when 1 is in the corner
-        constraint if remain[1,1] = 1 then rs[1,1] + cs[1,1] = 0  endif;
-        constraint if remain[1,ncol] = 1 then rs[1,ncol] + cs[1,ncol+1] = 0  endif;
-        constraint if remain[nrow,1] = 1 then rs[nrow+1,1] + cs[nrow,1] = 0  endif;
-        constraint if remain[nrow,ncol] = 1 then rs[nrow+1,ncol] + cs[nrow,ncol+1] = 0  endif;
-        
-        % Edges that must be chosen when 3 is in the corner
-        constraint if remain[1,1] = 3 then rs[1,1] + cs[1,1] = 2  endif;
-        constraint if remain[1,ncol] = 3 then rs[1,ncol] + cs[1,ncol+1] = 2  endif;
-        constraint if remain[nrow,1] = 3 then rs[nrow+1,1] + cs[nrow,1] = 2  endif;
-        constraint if remain[nrow,ncol] = 3 then rs[nrow+1,ncol] + cs[nrow,ncol+1] = 2  endif;
-        
-        % Edges that must be chosen when 2 is in the corner
-        constraint if remain[1,1] = 2 then rs[1,2] + cs[2,1] = 2  endif;
-        constraint if remain[1,ncol] = 2 then rs[1,ncol-1] + cs[2,ncol+1] = 2  endif;
-        constraint if remain[nrow,1] = 2 then rs[nrow+1,2] + cs[nrow-1,1] = 2  endif;
-        constraint if remain[nrow,ncol] = 2 then rs[nrow+1,ncol-1] + cs[nrow-1,ncol+1] = 2  endif;
     """)
 
     row_forbid, col_forbid = find_forbid(problem.constraint)
     row_force, col_force = find_force(problem.constraint)
 
-    # for row_pos in row_forbid:
-    #     model.add_string('constraint rs[' + str(row_pos[0]+1) + ',' + str(row_pos[1]+1) + '] = 0;')
+    for row_pos in row_forbid:
+        model.add_string('constraint rs[' + str(row_pos[0]+1) + ',' + str(row_pos[1]+1) + '] = 0;')
     for row_pos in row_force:
         model.add_string('constraint rs[' + str(row_pos[0]+1) + ',' + str(row_pos[1]+1) + '] = 1;')
-    # for col_pos in col_forbid:
-    #     model.add_string('constraint cs[' + str(col_pos[0]+1) + ',' + str(col_pos[1]+1) + '] = 0;')
+    for col_pos in col_forbid:
+        model.add_string('constraint cs[' + str(col_pos[0]+1) + ',' + str(col_pos[1]+1) + '] = 0;')
     for col_pos in col_force:
         model.add_string('constraint cs[' + str(col_pos[0]+1) + ',' + str(col_pos[1]+1) + '] = 1;')
 
@@ -120,7 +94,7 @@ def minizinc_solve(problem, solver_name):
     problem.row_solution = np.array(result["rs"])
     problem.col_solution = np.array(result["cs"])
     print()
-    print("MINIZINC SOLUTION")
+    print("MINIZINC SOLUTION:")
     problem.print_solution()
 
 

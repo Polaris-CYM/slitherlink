@@ -44,29 +44,27 @@ constraint forall( [rs[i,j+1] + cs[i,j+1] + cs[i-1,j+1] = 1 | i in 2..nrow, j in
 constraint forall( [rs[i,j-1] + rs[i,j] + cs[i-1,j] = 1 | i in 2..nrow-1, j in 2..ncol where cs[i,j] = 1]);
 constraint forall( [rs[i+1,j-1] + rs[i+1,j] + cs[i+1,j] = 1 | i in 2..nrow-1, j in 2..ncol where cs[i,j] = 1]);
 
-% 两个平行的3相连，不在第一行或最后一行
+% Edges that need to be forbidden when two 3's are connected
 constraint forall( [cs[i-1,j+1] + cs[i+1,j+1] = 0 | i in 2..nrow-1, j in 1..ncol-1 where remain[i,j] = 3 /\ remain[i,j+1] = 3]);
-% 两个垂直的3相连，不在第一列或最后一列
 constraint forall( [rs[i+1,j-1] + rs[i+1,j+1] = 0 | i in 1..nrow-1, j in 2..ncol-1 where remain[i,j] = 3 /\ remain[i+1,j] = 3]);
-% 两个平行的3相连，在第一行
 constraint forall( [cs[2,j+1] = 0 | j in 1..ncol-1 where remain[1,j] = 3 /\ remain[1,j+1] = 3]);
-% 两个平行的3相连，在最后一行
 constraint forall( [cs[nrow-1,j+1] = 0 | j in 1..ncol-1 where remain[nrow,j] = 3 /\ remain[nrow,j+1] = 3]);
-% 两个垂直的3相连，在第一列
 constraint forall( [rs[i+1,2] = 0 | i in 1..nrow-1 where remain[i,1] = 3 /\ remain[i+1,1] = 3]);
-% 两个垂直的3相连，在最后一列
 constraint forall( [rs[i+1,ncol-1] = 0 | i in 1..nrow-1 where remain[i,ncol] = 3 /\ remain[i+1,ncol] = 3]);
-% 1在角落
+        
+% Edges that need to be forbidden when 1 is in the corner
 constraint if remain[1,1] = 1 then rs[1,1] + cs[1,1] = 0  endif;
 constraint if remain[1,ncol] = 1 then rs[1,ncol] + cs[1,ncol+1] = 0  endif;
 constraint if remain[nrow,1] = 1 then rs[nrow+1,1] + cs[nrow,1] = 0  endif;
 constraint if remain[nrow,ncol] = 1 then rs[nrow+1,ncol] + cs[nrow,ncol+1] = 0  endif;
-% 3在角落
+        
+% Edges that must be chosen when 3 is in the corner
 constraint if remain[1,1] = 3 then rs[1,1] + cs[1,1] = 2  endif;
 constraint if remain[1,ncol] = 3 then rs[1,ncol] + cs[1,ncol+1] = 2  endif;
 constraint if remain[nrow,1] = 3 then rs[nrow+1,1] + cs[nrow,1] = 2  endif;
 constraint if remain[nrow,ncol] = 3 then rs[nrow+1,ncol] + cs[nrow,ncol+1] = 2  endif;
-% 2在角落
+        
+% Edges that must be chosen when 2 is in the corner
 constraint if remain[1,1] = 2 then rs[1,2] + cs[2,1] = 2  endif;
 constraint if remain[1,ncol] = 2 then rs[1,ncol-1] + cs[2,ncol+1] = 2  endif;
 constraint if remain[nrow,1] = 2 then rs[nrow+1,2] + cs[nrow-1,1] = 2  endif;
