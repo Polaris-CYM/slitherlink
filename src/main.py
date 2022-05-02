@@ -9,6 +9,7 @@ from minizinc_solve import minizinc_solve
 if __name__ == '__main__':
     alltime = []
     for _ in range(10):
+        # Get a random puzzle each time size=0--5x5 normal, size=4--5x5 hard, size=1--10x10 normal, size=10--7x7 normal
         problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=0')
 
         start_time = time.time()

@@ -106,6 +106,19 @@ def minizinc_solve(problem, solver_name):
         constraint forall( [cs[i,j] + rs[i+1,j] = 2 | i in 1..nrow-1, j in 2..ncol where remain[i,j] = 3 /\ remain[i+1,j-1] = 0]);
         constraint forall( [cs[i,j] + rs[i,j] = 2 | i in 2..nrow, j in 2..ncol where remain[i,j] = 3 /\ remain[i-1,j-1] = 0]);
         constraint forall( [cs[i,j+1] + rs[i,j] = 2 | i in 2..nrow, j in 1..ncol-1 where remain[i,j] = 3 /\ remain[i-1,j+1] = 0]);
+        
+        % Edges that must be chosen when a '3' is adjacent to a '3' diagonally
+        constraint forall( [cs[i,j] + rs[i,j] + cs[i+1,j+2] + rs[i+2,j+1] = 4 | i in 1..nrow-1, j in 1..ncol-1 where remain[i,j] = 3 /\ remain[i+1,j+1] = 3]);
+        constraint forall( [cs[i,j+1] + rs[i,j] + cs[i+1,j-1] + rs[i+2,j-1] = 4 | i in 1..nrow-1, j in 2..ncol where remain[i,j] = 3 /\ remain[i+1,j-1] = 3]);
+        constraint forall( [cs[i,j+1] + rs[i+1,j] + cs[i-1,j-1] + rs[i-1,j-1] = 4  | i in 2..nrow, j in 2..ncol where remain[i,j] = 3 /\ remain[i-1,j-1] = 3]);
+        constraint forall( [cs[i,j] + rs[i+1,j] + cs[i-1,j+2] + rs[i-1,j+1] = 4  | i in 2..nrow, j in 1..ncol-1 where remain[i,j] = 3 /\ remain[i-1,j+1] = 3]);
+        
+        % Edges that mush be chosen when two 3s are in the same diagonal, but separated by any number of 2s (and only 2s)
+        %constraint forall( [cs[i,j] + rs[i,j] + cs[i+2,j+3] + rs[i+3,j+2] = 4 | i in 1..nrow-2, j in 1..ncol-2 where remain[i,j] = 3 /\ remain[i+1,j+1] = 2 /\ remain[i+2,j+2] = 3]);
+        %constraint forall( [cs[i,j+1] + rs[i,j] + cs[i+2,j-2] + rs[i+3,j-2] = 4 | i in 1..nrow-2, j in 3..ncol where remain[i,j] = 3 /\ remain[i+1,j-1] = 2 /\ remain[i+2,j-2] = 3]);
+        %constraint forall( [cs[i,j+1] + rs[i+1,j] + cs[i-2,j-2] + rs[i-2,j-2] = 4  | i in 3..nrow, j in 3..ncol where remain[i,j] = 3 /\ remain[i-1,j-1] = 2 /\ remain[i-2,j-2] = 3]);
+        %constraint forall( [cs[i,j] + rs[i+1,j] + cs[i-2,j+3] + rs[i-2,j+2] = 4  | i in 3..nrow, j in 1..ncol-2 where remain[i,j] = 3 /\ remain[i-1,j+1] = 2 /\ remain[i-2,j+2] = 3]);
+
     """)
 
     # row_forbid, col_forbid = find_forbid(problem.constraint)
