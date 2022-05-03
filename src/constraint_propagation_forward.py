@@ -533,7 +533,7 @@ if __name__ == '__main__':
     # nrow, ncol = 5, 5
     # problem = slitherlink(nrow, ncol, constraint=np.array(list(overall_limit)).reshape(nrow, ncol))
 
-    problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=10')
+    problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=0')
     problem.print_problem()
 
     start_time = time.time()
