@@ -88,7 +88,7 @@ constraint forall( [cs[i,j+1] + rs[i,j] + cs[i+1,j-1] + rs[i+2,j-1] = 4 | i in 1
 constraint forall( [cs[i,j+1] + rs[i+1,j] + cs[i-1,j-1] + rs[i-1,j-1] = 4  | i in 2..nrow, j in 2..ncol where remain[i,j] = 3 /\ remain[i-1,j-1] = 3]);
 constraint forall( [cs[i,j] + rs[i+1,j] + cs[i-1,j+2] + rs[i-1,j+1] = 4  | i in 2..nrow, j in 1..ncol-1 where remain[i,j] = 3 /\ remain[i-1,j+1] = 3]);
 
-% Edges that mush be chosen when two 3s are in the same diagonal, but separated by any number of 2s (and only 2s)
+% Edges that mush be chosen when two 3s are in the same diagonal, but separated by a '2'
 constraint forall( [cs[i,j] + rs[i,j] + cs[i+2,j+3] + rs[i+3,j+2] = 4 | i in 1..nrow-2, j in 1..ncol-2 where remain[i,j] = 3 /\ remain[i+1,j+1] = 2 /\ remain[i+2,j+2] = 3]);
 constraint forall( [cs[i,j+1] + rs[i,j] + cs[i+2,j-2] + rs[i+3,j-2] = 4 | i in 1..nrow-2, j in 3..ncol where remain[i,j] = 3 /\ remain[i+1,j-1] = 2 /\ remain[i+2,j-2] = 3]);
 constraint forall( [cs[i,j+1] + rs[i+1,j] + cs[i-2,j-2] + rs[i-2,j-2] = 4  | i in 3..nrow, j in 3..ncol where remain[i,j] = 3 /\ remain[i-1,j-1] = 2 /\ remain[i-2,j-2] = 3]);

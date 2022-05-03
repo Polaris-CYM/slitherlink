@@ -145,6 +145,85 @@ def find_force(remain):
                             col_force.append((row-1,col+1))
                         if col_solution_pos_legal((row+1,col+1), nrow, ncol):
                             col_force.append((row+1,col+1))
+
+    # situation 4: a '3' is adjacent to a '0' diagonally
+    for row in range(nrow):
+        for col in range(ncol):
+            if remain[row, col] == '3':
+                if digit_pos_legal((row + 1, col + 1), nrow, ncol):
+                    if remain[row + 1, col + 1] == '0':
+                        col_force.append((row, col + 1))
+                        row_force.append((row + 1, col))
+                if digit_pos_legal((row + 1, col - 1), nrow, ncol):
+                    if remain[row + 1, col - 1] == '0':
+                        col_force.append((row, col))
+                        row_force.append((row + 1, col))
+                if digit_pos_legal((row - 1, col - 1), nrow, ncol):
+                    if remain[row - 1, col - 1] == '0':
+                        col_force.append((row, col))
+                        row_force.append((row, col))
+                if digit_pos_legal((row - 1, col + 1), nrow, ncol):
+                    if remain[row - 1, col + 1] == '0':
+                        col_force.append((row, col + 1))
+                        row_force.append((row, col))
+
+    # situation 5: a '3' is adjacent to a '3' diagonally
+    for row in range(nrow):
+        for col in range(ncol):
+            if remain[row, col] == '3':
+                if digit_pos_legal((row + 1, col + 1), nrow, ncol):
+                    if remain[row + 1, col + 1] == '3':
+                        col_force.append((row, col))
+                        row_force.append((row, col))
+                        col_force.append((row + 1, col + 2))
+                        row_force.append((row + 2, col + 1))
+                if digit_pos_legal((row + 1, col - 1), nrow, ncol):
+                    if remain[row + 1, col - 1] == '3':
+                        col_force.append((row, col + 1))
+                        row_force.append((row, col))
+                        col_force.append((row + 1, col - 1))
+                        row_force.append((row + 2, col - 1))
+                if digit_pos_legal((row - 1, col - 1), nrow, ncol):
+                    if remain[row - 1, col - 1] == '3':
+                        col_force.append((row, col + 1))
+                        row_force.append((row + 1, col))
+                        col_force.append((row - 1, col - 1))
+                        row_force.append((row - 1, col - 1))
+                if digit_pos_legal((row - 1, col + 1), nrow, ncol):
+                    if remain[row - 1, col + 1] == '3':
+                        col_force.append((row, col))
+                        row_force.append((row + 1, col))
+                        col_force.append((row - 1, col + 2))
+                        row_force.append((row - 1, col + 1))
+
+    # situation 6: two 3s are in the same diagonal, but separated by a '2'
+    for row in range(nrow):
+        for col in range(ncol):
+            if remain[row, col] == '3':
+                if digit_pos_legal((row + 1, col + 1), nrow, ncol) and digit_pos_legal((row + 2, col + 2), nrow, ncol):
+                    if remain[row + 1, col + 1] == '2' and remain[row + 2, col + 2] == '3':
+                        col_force.append((row, col))
+                        row_force.append((row, col))
+                        col_force.append((row + 2, col + 3))
+                        row_force.append((row + 3, col + 2))
+                if digit_pos_legal((row + 1, col - 1), nrow, ncol) and digit_pos_legal((row + 2, col - 2), nrow, ncol):
+                    if remain[row + 1, col - 1] == '2' and remain[row + 2, col - 2] == '3':
+                        col_force.append((row, col + 1))
+                        row_force.append((row, col))
+                        col_force.append((row + 2, col - 2))
+                        row_force.append((row + 3, col - 2))
+                if digit_pos_legal((row - 1, col - 1), nrow, ncol) and digit_pos_legal((row - 2, col - 2), nrow, ncol):
+                    if remain[row - 1, col - 1] == '2' and remain[row - 2, col - 2] == '3':
+                        col_force.append((row, col + 1))
+                        row_force.append((row + 1, col))
+                        col_force.append((row - 2, col - 2))
+                        row_force.append((row - 2, col - 2))
+                if digit_pos_legal((row - 1, col + 1), nrow, ncol) and digit_pos_legal((row - 2, col + 2), nrow, ncol):
+                    if remain[row - 1, col + 1] == '2' and remain[row - 2, col + 2] == '3':
+                        col_force.append((row, col))
+                        row_force.append((row + 1, col))
+                        col_force.append((row - 2, col + 3))
+                        row_force.append((row - 2, col + 2))
     
     return row_force, col_force
 
@@ -450,11 +529,11 @@ if __name__ == '__main__':
     # overall_limit = '22****3*223**23***3*3****'
     # overall_limit = '*******2**222*****3**33*3' # 5*5
     # overall_limit = '*1****1*12*1**3**0*13*33*'
-    # overall_limit = '*32***2*****3**210****2*3'
+    # overall_limit = '*3*33***21**3**2**2**33*3'
     # nrow, ncol = 5, 5
     # problem = slitherlink(nrow, ncol, constraint=np.array(list(overall_limit)).reshape(nrow, ncol))
 
-    problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=0')
+    problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=10')
     problem.print_problem()
 
     start_time = time.time()
