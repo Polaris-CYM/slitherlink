@@ -445,9 +445,9 @@ if __name__ == '__main__':
     # overall_limit = '323*221**3233213' # 4*4
     # overall_limit = '22****3*223**23***3*3****'
     # overall_limit = '*******2**222*****3**33*3' # 5*5
-    # overall_limit = '3**23*****2*203*23***23*3'
+    # overall_limit = '2122223211222223232333212022222323221210222232233'
     # overall_limit = '******33**1***12****20***1**11*2****' # 6*6
-    # nrow, ncol = 5,5
+    # nrow, ncol = 6,6
     # problem = slitherlink(nrow, ncol, constraint=np.array(list(overall_limit)).reshape(nrow, ncol))
 
     problem = generate_problem_from_url(url='http://www.puzzle-loop.com/?v=0&size=0')
